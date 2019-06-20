@@ -1,0 +1,44 @@
+{% extends '../base.html' %}
+{% block csslink %}
+    <link href="/assets/css/guestbook.css" rel="stylesheet" type="text/css">
+{% endblock %}
+{% block content %}
+			<div id="guestbook">
+				<form action="/guestbook/add" method="post">
+                    {% csrf_token %}
+
+					<table>
+						<tr>
+							<td>이름</td><td><input type="text" name="name"></td>
+							<td>비밀번호</td><td><input type="password" name="pass"></td>
+						</tr>
+						<tr>
+							<td colspan=4><textarea name="content" id="content"></textarea></td>
+						</tr>
+						<tr>
+							<td colspan=4 align=right><input type="submit" VALUE=" 확인 "></td>
+						</tr>
+					</table>
+				</form>
+				<ul>
+					<li>
+                        {% for article in article_list %}
+						<table>
+							<tr>
+								<td>{{ article.id }}</td>
+								<td>{{ article.name }}</td>
+								<td>{{ article.regdate }}</td>
+								<td><a href="/guestbook/delete/{{article.id}}">삭제</a></td>
+							</tr>
+							<tr>
+								<td colspan=4>
+								{{ article.contents }}
+								</td>
+							</tr>
+						</table>
+                        {% endfor %}
+						<br>
+					</li>
+				</ul>
+			</div>
+{% endblock %}
