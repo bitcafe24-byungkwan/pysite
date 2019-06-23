@@ -13,5 +13,5 @@ class Board(models.Model):
     groupno = models.IntegerField(default=0)
     orderno = models.IntegerField(default=0)
     depth = models.IntegerField(default=0)
-
+    valid = models.BooleanField(default=True)
     user = models.ForeignKey(User, to_field='id', on_delete=models.CASCADE)
