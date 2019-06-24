@@ -35,7 +35,27 @@ def article_list(request, page_id=1):
 def view(request, article_id=1):
     article = Board.objects.get(id=article_id)
     data = {'article': article}
-    return render(request, 'board/view.html', data)
+    response = render(request, 'board/view.html', data)
+    key_id = get_session_user_id(request)
+
+    check = False
+    if not request.COOKIES.get(str(key_id)):
+        response.set_cookie(str(key_id), article_id, 600, True)
+    else:
+        already_read = request.COOKIES.get(str(key_id))
+        read_list = already_read.split(':')
+        check = False
+        for read in read_list:
+            if read == str(article_id):
+                check = True
+                break
+        if check is False:
+            already_read = already_read + ':' + str(article_id)
+            response.set_cookie(str(key_id), already_read)
+    if check is False:
+        Board.objects.filter(id=article_id).update(hit=F('hit') + 1)
+
+    return response
 
 
 def write_form(request):
