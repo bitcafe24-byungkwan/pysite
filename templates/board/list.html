@@ -41,11 +41,31 @@
                         <td>-</td>
                         <td>{{ article.hit }}</td>
                         <td>{{ article.regdate }}</td>
-                        <td>-</td>>
+                        <td>-</td>
                     {% endif %}
                 </tr>
 
             {% endfor %}
+        <!-- pager 추가 -->
+				<div class="pager">
+					<ul>
+                        {% if article_list.has_previous %}
+						<li><a href="/board/{{ article_list.previous_page_number }}">◀</a></li>
+                        {% endif %}
+                        {% for list_index in page_list %}
+                            {% if list_index == article_list.number %}
+                            <li class="selected">{{ list_index }}</li>
+                            {% else %}
+						    <li><a href="/board/{{ list_index }}">{{ list_index }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                    {% if article_list.has_next %}
+						<li><a href="/board/{{ article_list.next_page_number }}">▶</a></li>
+                    {% endif %}
+					</ul>
+				</div>
+				<!-- pager 추가 -->
         </table>
         {% if request.session.authuser is not None %}
             <div class="bottom">

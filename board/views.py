@@ -1,3 +1,6 @@
+import math
+
+from django.core.paginator import Paginator
 from django.db.models import Max, F
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
@@ -17,8 +20,15 @@ def get_session_user_id(request):
 
 
 def article_list(request, page_id=1):
-    articles = Board.objects.all().order_by('-groupno', 'orderno')
-    data = {'article_list': articles}
+    all_articles = Board.objects.all().order_by('-groupno', 'orderno')
+    paginated_articles = Paginator(all_articles, 10)
+
+    articles = paginated_articles.get_page(page_id)
+    page_id = articles.number
+    page_list = list(filter(lambda x: x > 0, range(page_id - 2, page_id + 3)))
+    page_list = [x for x in page_list if int(x) <= paginated_articles.num_pages]
+    print(page_list)
+    data = {'article_list': articles, 'page_list': page_list}
     return render(request, 'board/list.html', data)
 
 
@@ -54,9 +64,9 @@ def write(request):
         article.groupno = obj.groupno
         article.orderno = obj.orderno + 1
         article.depth = obj.depth + 1
-        Board.objects.filter(groupno=obj.groupno).\
-            filter(orderno__gt=obj.orderno).\
-            update(orderno=F('orderno')+1)
+        Board.objects.filter(groupno=obj.groupno). \
+            filter(orderno__gt=obj.orderno). \
+            update(orderno=F('orderno') + 1)
 
     article.save()
     obj = Board.objects.latest('id')
